@@ -1,0 +1,145 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace WindowsApplication1
+{
+    public partial class Form7 : Form
+    {
+        SqlConnection con;
+        public Form7()
+        {
+            InitializeComponent();
+            con = new SqlConnection(@"Data Source=.\SQLEXPRESS;AttachDbFilename=C:\Users\Dell\Documents\Visual Studio 2005\Projects\GCP_pro1274\GCP_pro1274\Database1.mdf;Integrated Security=True;User Instance=True");
+        }
+        
+                void showdata()
+            {
+                con.Open();
+                string ID = "";
+                int oldID;
+               
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = con;
+                cmd.CommandText = "select Batchid from Batch";
+                cmd.CommandType = CommandType.Text;
+                SqlDataReader rd = cmd.ExecuteReader();
+
+                while (rd.Read())
+                {
+                    ID = rd["Batchid"].ToString();
+
+                }
+                oldID = int.Parse(ID) + 1;
+                textBox1.Text = oldID.ToString();
+                rd.Close();
+                con.Close();
+
+          
+
+
+            }
+
+            private void Form7_Load(object sender, EventArgs e)
+            {
+                showdata();
+
+            }
+            void adddata(int bid,string nm, string sd, string ed, string lec)
+            {
+                con.Open();
+                SqlTransaction trans = con.BeginTransaction();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = con;
+                cmd.Transaction = trans;
+
+                cmd.CommandText = "Insert into [Batch](Batchid,Name,StartingDate,EndingDate, Lecturer)values('" + bid + "','"+nm+"','" + sd + "','" + ed + "','" + lec + "')";
+                cmd.CommandType = CommandType.Text;
+                try
+                {
+                    int count = cmd.ExecuteNonQuery();
+                    if (count > 0)
+                    {
+                        DialogResult r = MessageBox.Show(this, "Do You Want To Continue?",
+                            "info", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                        if (r == DialogResult.OK)
+                        {
+                            trans.Commit();
+                        }
+                        else
+                        {
+                            trans.Rollback();
+                        }
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                con.Close();
+            }
+
+
+
+            private void button1_Click(object sender, EventArgs e)
+            {
+                
+                
+            adddata(int.Parse(textBox1.Text), textBox2.Text, textBox3.Text,textBox4.Text, comboBox1.Text);
+           
+                showdata();
+            }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+        }
+
+       
+    }
